@@ -1,36 +1,32 @@
 import os
 import re
 import logging
-from matchmaker import matchshows
+from matchmaker import matchshows, MatchError
 import win32file
+import json
 
 logging.basicConfig(filename='cleaner.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
-del_folders_re = re.compile('(Subs|Sample)')
-mkv_re = re.compile('(mkv|avi)')
-
-
-def get_folders(abs_path):
-    for f in os.listdir(abs_path):
-        if os.path.isdir(os.path.join(abs_path, f)):
-            yield os.path.normpath(f)
+mkv_re = re.compile('(mkv|avi|mp4)$')
 
 
 class FolderContent:
     def __init__(self, abs_path):
-        self.path = str(abs_path)
-        self.contains = list()
-
-    @property
-    def isempty(self):
-        for fi in os.listdir(self.path):
-            self.contains.append(os.path.join(self.path, fi))
-        if len(self.contains) == 0:
-            return True
+        if os.path.isdir(abs_path):
+            self.path = abs_path
         else:
-            return False
+            raise ValueError('%s is not a dir' % abs_path)
+
+        self.files, self.folders = get_content(self.path)
 
     def __str__(self):
         return str(self.path)
+
+    @property
+    def isempty(self):
+        if len(self.folders) + len(self.files) == 0:
+            return True
+        else:
+            return False
 
     def delete(self):
         try:
@@ -41,11 +37,20 @@ class FolderContent:
 
 class FileContent:
     def __init__(self, abs_path):
-        self.path = str(abs_path)
-        self.ext = str(self.path.split('.')[-1:])
+        self.path = abs_path
+        self.ext = os.path.splitext(self.path)[1]
 
     def __str__(self):
-        return self.path
+        return 'name=%s,deletable=%s,size=%d' % (self.base, self.isdelete, self.size)
+
+    @property
+    def base(self):
+        return os.path.basename(self.path)
+
+    @property
+    def json(self):
+        arr = {"name": os.path.basename(self.path), "isdelete": self.isdelete, "size": self.size}
+        return json.dumps(arr, sort_keys=False)
 
     def delete(self):
         try:
@@ -61,39 +66,56 @@ class FileContent:
             return True
 
     @property
-    def __len__(self):
-        return len(self.path)
+    def size(self):
+        return int(os.path.getsize(self.path) / (1024**2))
 
 
-if __name__ == '__main__':
+def get_content(path):
+    folders = []
+    files = []
+    for content in os.listdir(path):
+        cpath = os.path.join(path, content)
+        if os.path.isdir(cpath):
+            folders.append(FolderContent(cpath))
+        elif os.path.isfile(cpath):
+            files.append(FileContent(cpath))
+    return files, folders
+
+
+def main():
     mypath = 'G:\\uTorrent Downloads'
     folders = list()
     files = list()
-    for folder in get_folders(mypath):
-        if os.path.isdir(os.path.join(mypath, folder)):
-            folders.append(FolderContent(os.path.join(mypath, folder)))
 
-    for f in folders:
-        _folder = FolderContent(f)
-        if _folder.isempty:
-            logging.info('deleted: %s' % _folder)
-            _folder.delete()
+    for dir_ in FolderContent(mypath).folders:
+        folders.append(dir_)
+
+    for fol in folders:
+        if fol.isempty:
+            fol.delete()
+        elif len(fol.folders) > 0:
+            for f in fol.folders:
+                folders.append(f)
         else:
-            for content in _folder.contains:
-                if os.path.isdir(content):
-                    folders.append(FolderContent(content))
-                elif os.path.isfile(content):
-                    files.append(FileContent(content))
+            [files.append(f) for f in fol.files]
+
     for f in files:
         if f.isdelete:
-            logging.info('deleting %s' % f)
             f.delete()
+            logging.info('deleted %s' % f)
         else:
-            file_name = os.path.basename(f.path)
-            dest = matchshows(file_name)
-            logging.info('moving %s to %s' % (f, dest))
             try:
-                win32file.MoveFile(f.path, os.path.join(dest, file_name))
+                dest = matchshows(f.base)
+                logging.info('matched %s with %s' % (f.base, dest))
+            except MatchError as me:
+                logging.error(me)
+                continue
+            try:
+                logging.info('moving %s to %s' % (f, dest))
+                win32file.MoveFile(f.path, os.path.join(dest, f.base))
             except Exception as e:
                 logging.error(e)
 
+
+if __name__ == '__main__':
+    main()
