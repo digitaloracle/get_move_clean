@@ -10,7 +10,9 @@ mkv_re = re.compile('(mkv|avi|mp4)$')
 
 
 class FolderContent:
+    """abstraction for folder object."""
     def __init__(self, abs_path):
+        """receives path to folder and extracts relevant attributes."""
         if os.path.isdir(abs_path):
             self.path = abs_path
         else:
@@ -23,12 +25,14 @@ class FolderContent:
 
     @property
     def isempty(self):
+        """:returns true if folder is empty."""
         if len(self.folders) + len(self.files) == 0:
             return True
         else:
             return False
 
     def delete(self):
+        """will delete given folder."""
         try:
             os.rmdir(self.path)
         except Exception as e:
@@ -36,7 +40,9 @@ class FolderContent:
 
 
 class FileContent:
+    """abstraction for file object"""
     def __init__(self, abs_path):
+        """receives path to file and extracts relevant attributes."""
         self.path = abs_path
         self.ext = os.path.splitext(self.path)[1]
 
@@ -45,14 +51,17 @@ class FileContent:
 
     @property
     def base(self):
+        """:returns base name without the path."""
         return os.path.basename(self.path)
 
     @property
     def json(self):
+        """:returns file object attributes in json format."""
         arr = {"name": os.path.basename(self.path), "isdelete": self.isdelete, "size": self.size}
         return json.dumps(arr, sort_keys=False)
 
     def delete(self):
+        """deletes given file."""
         try:
             os.remove(self.path)
         except Exception as e:
@@ -60,6 +69,7 @@ class FileContent:
 
     @property
     def isdelete(self):
+        """evaluate if file is safe to delete."""
         if re.search(mkv_re, self.ext):
             return False
         else:
@@ -67,10 +77,12 @@ class FileContent:
 
     @property
     def size(self):
+        """:returns the size of the file in MB."""
         return int(os.path.getsize(self.path) / (1024**2))
 
 
 def get_content(path):
+    """:returns list of files and list of dirs in given path."""
     folders = []
     files = []
     for content in os.listdir(path):
@@ -82,7 +94,7 @@ def get_content(path):
     return files, folders
 
 
-def main():
+def clean():
     mypath = 'G:\\uTorrent Downloads'
     folders = list()
     files = list()
@@ -115,7 +127,10 @@ def main():
                 win32file.MoveFile(f.path, os.path.join(dest, f.base))
             except Exception as e:
                 logging.error(e)
+                if e[0] == 183:
+                    f.delete()
+                    logging.info('%s exists already, deleting duplicate' % f.base)
 
 
 if __name__ == '__main__':
-    main()
+    clean()
