@@ -45,14 +45,11 @@ class FileContent:
         """receives path to file and extracts relevant attributes."""
         self.path = abs_path
         self.ext = os.path.splitext(self.path)[1]
+        self.size = int(os.path.getsize(self.path) / (1024**2))
+        self.base = os.path.basename(self.path)
 
     def __str__(self):
         return 'name=%s,deletable=%s,size=%d' % (self.base, self.isdelete, self.size)
-
-    @property
-    def base(self):
-        """:returns base name without the path."""
-        return os.path.basename(self.path)
 
     @property
     def json(self):
@@ -75,11 +72,6 @@ class FileContent:
         else:
             return True
 
-    @property
-    def size(self):
-        """:returns the size of the file in MB."""
-        return int(os.path.getsize(self.path) / (1024**2))
-
 
 def get_content(path):
     """:returns list of files and list of dirs in given path."""
@@ -95,6 +87,7 @@ def get_content(path):
 
 
 def clean():
+    moved = False
     mypath = 'G:\\uTorrent Downloads'
     folders = list()
     files = list()
@@ -125,11 +118,13 @@ def clean():
             try:
                 logging.info('moving %s to %s' % (f, dest))
                 win32file.MoveFile(f.path, os.path.join(dest, f.base))
+                moved = True
             except Exception as e:
                 logging.error(e)
                 if e[0] == 183:
                     f.delete()
                     logging.info('%s exists already, deleting duplicate' % f.base)
+    return moved
 
 
 if __name__ == '__main__':

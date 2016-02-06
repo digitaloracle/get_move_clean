@@ -7,7 +7,7 @@ import math
 import sys
 
 
-logging.basicConfig(filename='move_claen.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(filename='move_claen.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 
 
 def cpu_load(samples=4):
@@ -24,9 +24,12 @@ def run_routines():
             logging.info('removed %s from deluge' % tor)
     except TypeError as te:
         logging.info('no deluge torrents to clean')
+        pass
     time.sleep(5)
-    clean()
-    refresh_plex()
+    sys.stderr.write('\ninitiated cleaner')
+    if clean():
+        sys.stderr.write('\ninitiated plex rescan')
+        refresh_plex()
 
 if __name__ == '__main__':
     try:
@@ -39,5 +42,5 @@ if __name__ == '__main__':
                 logging.info("cpu avarage was above 30%, waiting 30 minutes")
                 time.sleep(minute*5)
     except KeyboardInterrupt:
-        logging.info("\nExiting")
+        sys.stderr.write("\nDone")
         sys.exit(0)
