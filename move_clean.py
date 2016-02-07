@@ -5,6 +5,7 @@ import time
 import psutil
 import math
 import sys
+import logging
 
 
 logging.basicConfig(filename='move_claen.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
@@ -37,10 +38,12 @@ if __name__ == '__main__':
         while 1:
             if cpu_load() < 30:
                 run_routines()
+                sys.stderr.write('\nsleeping for 30 minutes')
                 time.sleep(minute*30)
             else:
                 logging.info("cpu avarage was above 30%, waiting 30 minutes")
                 time.sleep(minute*5)
+                sys.stderr.write('\nsleeping for 5 minutes')
     except KeyboardInterrupt:
         sys.stderr.write("\nDone")
         sys.exit(0)

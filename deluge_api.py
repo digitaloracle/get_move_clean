@@ -16,13 +16,13 @@ def save_cookie(cookie_file):
     cook = auth().cookies
     with open(cookie_file, 'w') as f:
         pickle.dump(requests.utils.dict_from_cookiejar(cook), f)
-    sys.stderr.write('cookie saved\n')
+    sys.stderr.write('\ncookie saved')
 
 
 def load_cookie(cookie_file):
     with open(cookie_file) as f:
         cookies = requests.utils.cookiejar_from_dict(pickle.load(f))
-    sys.stderr.write('cookie loaded\n')
+    sys.stderr.write('\ncookie loaded')
     return cookies
 
 
