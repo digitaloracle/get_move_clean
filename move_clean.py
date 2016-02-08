@@ -8,7 +8,7 @@ import sys
 import logging
 
 
-logging.basicConfig(filename='move_claen.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(filename='move_claen.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
 
 def cpu_load(samples=4):
@@ -20,17 +20,18 @@ def cpu_load(samples=4):
 
 
 def run_routines():
-    try:
-        for tor in remove_completed():
+    comp = remove_completed()
+    if len(comp) > 0:
+        for tor in comp:
             logging.info('removed %s from deluge' % tor)
-    except TypeError as te:
+        if clean():
+            logging.info('cleaner done')
+            logging.info('initiated plex rescan')
+            refresh_plex()
+        else:
+            logging.debug('nothing to move')
+    else:
         logging.info('no deluge torrents to clean')
-        pass
-    time.sleep(5)
-    sys.stderr.write('\ninitiated cleaner')
-    if clean():
-        sys.stderr.write('\ninitiated plex rescan')
-        refresh_plex()
 
 if __name__ == '__main__':
     try:

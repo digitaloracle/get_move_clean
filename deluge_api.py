@@ -9,7 +9,6 @@ get_torrents = {"id": 3, "method": "webapi.get_torrents", "params": []}
 check_conn = {"id": 2, "method": "web.connected", "params": []}
 auth_string = {"id": 1, "method": "auth.login", "params": ["dieyqqp"]}
 url = 'http://127.0.0.1:8112/json'
-cookies = ''
 
 
 def save_cookie(cookie_file):
@@ -50,6 +49,8 @@ def get_torrent_status(myhash):
 
 
 def remove_completed():
+    global cookies
+    removed = list()
     save_cookie('deluge.cookie')
     cookies = load_cookie('deluge.cookie')
     if call_deluge(check_conn).status_code == 200:
@@ -59,7 +60,9 @@ def remove_completed():
             torname = t["name"]
             if get_torrent_status(torhash).json()["result"]["progress"] == 100.0:
                 remove_by_hash(torhash)
-                yield torname
+                removed.append(torname)
+    return removed
 
 if __name__ == '__main__':
-    print 'test'
+    t = remove_completed()
+    print t
