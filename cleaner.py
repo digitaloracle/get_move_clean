@@ -6,13 +6,17 @@ import win32file
 import json
 
 logging.basicConfig(filename='cleaner.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
-mkv_re = re.compile('(mkv|avi|mp4)$')
+mkv_re = re.compile('(mkv|avi|mp4|iso)$')
 
 
 class FolderContent:
     """abstraction for folder object."""
     def __init__(self, abs_path):
-        """receives path to folder and extracts relevant attributes."""
+        """
+        receives path to folder and extracts relevant attributes.
+        Args:
+            abs_path (str): the absolute path to given folder
+        """
         if os.path.isdir(abs_path):
             self.path = abs_path
         else:
@@ -21,11 +25,19 @@ class FolderContent:
         self.files, self.folders = get_content(self.path)
 
     def __str__(self):
+        """
+        Returns:
+            string of the given absolute path on init
+        """
         return str(self.path)
 
     @property
     def isempty(self):
-        """:returns true if folder is empty."""
+        """
+        Returns:
+            True if the folder contents is empty or
+            False iotherwise
+        """
         if len(self.folders) + len(self.files) == 0:
             return True
         else:
@@ -53,7 +65,10 @@ class FileContent:
 
     @property
     def json(self):
-        """:returns file object attributes in json format."""
+        """
+        Returns:
+            file object attributes in json format.
+        """
         arr = {"name": os.path.basename(self.path), "isdelete": self.isdelete, "size": self.size}
         return json.dumps(arr, sort_keys=False)
 
@@ -74,7 +89,10 @@ class FileContent:
 
 
 def get_content(path):
-    """:returns list of files and list of dirs in given path."""
+    """
+    Returns:
+        list of files and list of dirs in given path.
+    """
     folders = []
     files = []
     for content in os.listdir(path):
