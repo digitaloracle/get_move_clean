@@ -38,13 +38,12 @@ if __name__ == '__main__':
         minute = 60
         while 1:
             if cpu_load() < 30:
+                logging.info("running routines")
                 run_routines()
-                sys.stderr.write('\n%s: sleeping for 10 minutes' % time.ctime())
                 time.sleep(minute*10)
             else:
                 logging.info("cpu avarage was above 30%, waiting 5 minutes")
                 time.sleep(minute*5)
-                sys.stderr.write('\n%s: sleeping for 5 minutes' % time.ctime())
     except KeyboardInterrupt:
         sys.stderr.write("\nDone")
         sys.exit(0)

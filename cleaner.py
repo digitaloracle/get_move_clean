@@ -6,7 +6,7 @@ import win32file
 import json
 
 logging.basicConfig(filename='cleaner.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
-mkv_re = re.compile('(mkv|avi|mp4|iso)$')
+mkv_re = re.compile('(mkv|avi|mp4|iso|mp3|flac|m3u8|zip)$')
 
 
 class FolderContent:
