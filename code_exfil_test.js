@@ -14,9 +14,6 @@ drwxr-xr-x@    - azalmanovitch  5 Mar 16:56 ├── transactions%5ffor%5fsio
 .rw-r--r--@  35M azalmanovitch  9 Feb 14:34 │  ├── GOOD.csv
 .rw-r--r--@ 2.4M azalmanovitch  9 Feb 14:32 │  └── SF.csv
 .rw-rw-rw-@ 3.8M azalmanovitch 15 Aug 17:03 ├── travel.pptx
-.rw-r--r--@  295 azalmanovitch 23 May 18:35 ├── udaexec.ini
-.rw-r--r--  1.5k azalmanovitch 30 Apr  8:53 ├── uniq_forward_subjects.txt
-.rw-r--r--@ 2.0M azalmanovitch 28 Dec  2016 ├── updated%20Interview%20workshop%2dCherry.pptx
 .rw-r--r--@  11k azalmanovitch  3 Jul 11:50 ├── vid-correction
 .rw-r--r--@  337 azalmanovitch  2 Aug  2016 ├── vim-scala_README.txt
 .rw-r--r--  117k azalmanovitch 18 Jan 11:21 ├── violator.html
@@ -38,7 +35,6 @@ drwxr-xr-x@    - azalmanovitch  5 Mar 16:56 ├── transactions%5ffor%5fsio
 .rw-r--r--@ 5.5k azalmanovitch 20 Apr 16:33 ├── www.paypalcredit.com%5fcert%5fswap.rtf
 .rw-------  4.6k azalmanovitch 20 Apr 16:35 ├── www.paypalcredit.com%5fcert%5fswap.rtf.gpg
 .rw-r--r--@ 1.3M azalmanovitch 14 Dec  2016 ├── xwb.zip
-.rw-r--r--@ 534k azalmanovitch 29 Jun  2016 ├── yPaypal%20International%20notes%20annual%20accounts%2031.12.2015%20v2.pdf
 .rw-r--r--@ 6.3M azalmanovitch 10 Jan 10:35 ├── yandex_microsoft_facebook_2_4.csv
 .rw-r--r--@ 5.8M azalmanovitch 10 Jan 10:38 ├── yandex_microsoft_facebook_5_6.csv
 .rw-r--r--@  162 azalmanovitch  3 Jan 14:11 ├── ~$-PayPal - China - Shanghai SAFE 2017 Outbound Quota and   Re-registration CHN-865725-v1-SHIDMS (002).docx
